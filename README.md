@@ -89,9 +89,57 @@ curl --location --request POST 'http://192.168.1.21:8989/trx_trans' \
 }
 ~~~
 
+# 四：代币 转账
+
+~~~
+curl -X POST \
+  http://192.168.1.21:8989/token_trans \
+  -H 'Cache-Control: no-cache' \
+  -H 'Content-Type: application/x-www-form-urlencoded' \
+  -d 'from_address_private=来源地址的私钥&fromAddress=从哪个地址转&toAddress=转出到那个地址&amount=转出数量'
+~~~
+
+## 返回结果
+~~~
+{
+    "code": 1,
+    "msg": "ok",
+    "data": {
+        "blockHash": "0x3175f5007700b762600cb43f1b150d020b57ce6f59e112c454da80c2be209e44",
+        "blockNumber": 6253207,
+        "contractAddress": null,
+        "cumulativeGasUsed": 2656657,
+        "from": "0xc0b7a9d008f9df4da0ae8f873623241a25264129",
+        "gasUsed": 51677,
+        "logs": [
+            {
+                "address": "0x4c9e49f4fdEbD0a5817C5C1ae207EcEaD997a29e",
+                "topics": [
+                    "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef",
+                    "0x000000000000000000000000c0b7a9d008f9df4da0ae8f873623241a25264129",
+                    "0x000000000000000000000000986b0d9aeaae529ca02399ba3a030c9eb7a0ce93"
+                ],
+                "data": "0x00000000000000000000000000000000000000000000000000000006fc23ac00",
+                "blockNumber": 6253207,
+                "transactionHash": "0x9269149fbb44a15257d6e197eea91123642478a7b3383bccb3482e15f0db47ab",
+                "transactionIndex": 24,
+                "blockHash": "0x3175f5007700b762600cb43f1b150d020b57ce6f59e112c454da80c2be209e44",
+                "logIndex": 42,
+                "removed": false,
+                "id": "log_75863e88"
+            }
+        ],
+        "logsBloom": "0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000800000000000001000000000000000000000000008001008000000000000000000000000000000000000000000000000000000000000000000000000000000000000000018000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000002000000000100000000000000000000000000000000000000000000000000008000000000000000000000400000000000000000000000000000000000",
+        "status": true,
+        "to": "0x4c9e49f4fdebd0a5817c5c1ae207ecead997a29e",
+        "transactionHash": "0x9269149fbb44a15257d6e197eea91123642478a7b3383bccb3482e15f0db47ab",
+        "transactionIndex": 24
+    }
+}
+~~~
 
 
-# 五：获取地址里面的HT数量
+# 五：获取地址里面的HT和token数量
 
 ~~~
 curl --location --request POST 'http://192.168.1.21:8989/get_money' \
@@ -105,7 +153,8 @@ curl --location --request POST 'http://192.168.1.21:8989/get_money' \
     "code": 1,
     "msg": "ok",
     "data": {
-        "ht": "0.497537"
+        "ht": "0.0499224845",
+        "token_balance": 99999970
     }
 }
 ~~~
@@ -125,20 +174,11 @@ curl --location --request POST 'http://192.168.1.21:8989/GetTransactionById' \
     "code": 1,
     "msg": "ok",
     "data": {
-        "blockHash": "0x85d09a4586d3438811b756a04d1c5deb4d124058756973ce1b991b887ef88691",
-        "blockNumber": 6249990,
-        "from": "0xC0b7A9D008f9Df4da0Ae8F873623241a25264129",
-        "gas": 21000,
-        "gasPrice": "1000000000",
-        "hash": "0xcce364a4cda88bc984b05dd3321bd4b8aa3d50e4162eaf050f5564e1798b7b70",
-        "input": "0x",
-        "nonce": 2,
-        "to": "0xA4Aa64949B83049CcDD4e03D6e554A6c063e8E9D",
-        "transactionIndex": 3,
-        "value": "2100000000000000",
-        "v": "0x224",
-        "r": "0x5c1bc665c87ca8b55bce9c768caab7de453e154ee7b95b73c9133d177d17d10e",
-        "s": "0x6b741d0eecc0e024277416c44214cdd8f9c226325325c799735348e2be5eaf20"
+        "status": "1",
+        "message": "OK",
+        "result": {
+            "status": "1"
+        }
     }
 }
 ~~~
@@ -180,7 +220,7 @@ curl --location --request POST 'http://192.168.1.21:8989/save_check_address' \
 4:系统会自动的过滤不是系统币地址 ，如果监控到是系统的币地址 ，那么会发送异步通知到配置的那个回调地址里面
 
 ~~~
-# HT异步通知数据如下：
+# HT代币异步通知数据如下：
 
 ~~~
 
@@ -220,6 +260,53 @@ curl --location --request POST 'http://192.168.1.21:8989/save_check_address' \
 ~~~
 
 
+
+# 九： token代币交易监控
+~~~
+1：修改配置文件异步通知地址 web_api_token_domain 改为你自己的
+
+2：调用保存监控地址接口 
+
+3：启动： pm2 start block_token.js
+
+4:系统会自动的过滤不是系统币地址 ，如果监控到是系统的币地址 ，那么会发送异步通知到配置的那个回调地址里面
+
+~~~
+# token代币异步通知数据如下：
+
+~~~
+
+{ from:
+   '0x42c9c9148a3d01f97e95d79e2629fc601dce9bdfa8f4d341b4d51dd20e9cd1e7',
+  to: '0x2b9210748cef1bd439becfd095b59c6322997599',
+  txID:
+   '0x42c9c9148a3d01f97e95d79e2629fc601dce9bdfa8f4d341b4d51dd20e9cd1e7',
+  amount: 1000000000000000,
+  extra:
+   { blockNumber: '6251540',
+     timeStamp: '1625648358',
+     hash:
+      '0x42c9c9148a3d01f97e95d79e2629fc601dce9bdfa8f4d341b4d51dd20e9cd1e7',
+     nonce: '26',
+     blockHash:
+      '0xecd534c27c61e50f5dce78ea2a6da7e2cf23ea923dd2cdd0193f1c8f2a3f4fe2',
+     from: '0x2f775f389bfc9a7bdc21e59c1a8da4cc63840326',
+     contractAddress: '0x4c9e49f4fdebd0a5817c5c1ae207ecead997a29e',
+     to: '0x2b9210748cef1bd439becfd095b59c6322997599',
+     value: '1000000000000000000000000',
+     tokenName: 'LongYuanBi Token',
+     tokenSymbol: 'LYB',
+     tokenDecimal: '9',
+     transactionIndex: '68',
+     gas: '4247773',
+     gasPrice: '1500000000',
+     gasUsed: '4225151',
+     cumulativeGasUsed: '7830469',
+     input: 'deprecated',
+     confirmations: '7764' } }
+
+
+~~~
 
 
 # 联系我
