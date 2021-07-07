@@ -1,4 +1,4 @@
-# HECO HT  服务端 ，请本地部署，不用担心私钥泄露。
+# HECO HT 服务端 ，请本地部署，不用担心私钥泄露。
 #  不用担心私钥泄露。
 # 不用担心私钥泄露。
 # 不用担心私钥泄露。
@@ -63,8 +63,8 @@ curl --location --request POST 'http://192.168.1.21:8989/isAddress' \
 curl --location --request POST 'http://192.168.1.21:8989/trx_trans' \
 --header 'Content-Type: application/x-www-form-urlencoded' \
 --data-urlencode 'from_address_private=发送人的私钥' \
---data-urlencode 'fromAddress=TDKGuuBEcHXj7g28NUZpVy4oG4DQpR2fG6' \
---data-urlencode 'toAddress=TAqF1BphciVbxzMR2qJyWdBWRFzz6xj2nh' \
+--data-urlencode 'fromAddress=来自谁' \
+--data-urlencode 'toAddress=给谁转' \
 --data-urlencode 'amount=0.01' 
 ~~~
 ## HT转账结果
